@@ -3,15 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "set PORT=4000 && next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "set PORT=4000 && next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@shapediver/viewer": "^2.0.7",
     "next": "12.2.3",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "reflect-metadata": "^0.1.13"
+
   },
   "devDependencies": {
     "eslint": "8.20.0",
