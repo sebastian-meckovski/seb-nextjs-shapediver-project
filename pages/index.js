@@ -39,14 +39,19 @@ const ShapediverPage = () => {
 
       return viewport;
     };
-
     console.log(getViewer());
   }, [containerRef]);
+
+  async function handleClick(){
+    SDV.sessions['mySession3'].getParameterByName('Shelf Width')[0].value = "1200";    
+    await SDV.sessions['mySession3'].customize();
+  }
 
   return (
     <div style={{ height: 600, width: 600 }}>
       <ShapeDiverV3 ref={containerRef} />
-      <h1>hello rafal</h1>
+      <h1>Hello World</h1>
+      <button onClick={handleClick}>UPDATE VIEW</button>
     </div>
   );
 };
