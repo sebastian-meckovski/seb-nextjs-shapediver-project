@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import * as SDV from "@shapediver/viewer";
+import RangeSlider from "../public/components/rangeSlider";
 
 const ShapediverPage = () => {
   const containerRef = useRef(null);
@@ -11,6 +12,7 @@ const ShapediverPage = () => {
 
     return viewer;
   }, [containerRef]);
+  
 
   useEffect(() => {
     const getSession = async () => {
@@ -18,12 +20,13 @@ const ShapediverPage = () => {
         ticket:
           "f3d18b5cf645e16648978afaa0b3389ed03bb463eeaa5049f39a841a49fdbc40ff6a1f6a35c358525781ff58b48eb8bc766f9c5273704ffb7d9f1b3a644086705c3e6dbe2e4fc5101c2b3b26e82b34f75e4a9b808658acfeccb17325d2cad436de68aef83131fc-d0b39c5fb2eaaa5eb54c0f288f4fa44e",
         modelViewUrl: "https://sdeuc1.eu-central-1.shapediver.com",
-        id: "mySession3"
+        id: "mySession4"
       });
 
       return session;
     };
-    console.log(getSession());
+    console.log('running session');
+    getSession();
   }, []);
 
   useEffect(() => {
@@ -43,12 +46,18 @@ const ShapediverPage = () => {
   }, [containerRef]);
 
   async function handleClick(){
-    SDV.sessions['mySession3'].getParameterByName('Shelf Width')[0].value = "1200";    
-    await SDV.sessions['mySession3'].customize();
+    SDV.sessions['mySession4'].getParameterByName('Shelf Width')[0].value = "1200";    
+    await SDV.sessions['mySession4'].customize();
+  }
+
+  async function handleChange(e){
+    SDV.sessions['mySession4'].getParameterByName('Shelf Width')[0].value = e.target.value;    
+    await SDV.sessions['mySession4'].customize();
   }
 
   return (
     <div style={{ height: 600, width: 600 }}>
+      <RangeSlider handleChange={handleChange}></RangeSlider>
       <ShapeDiverV3 ref={containerRef} />
       <h1>Hello World</h1>
       <button onClick={handleClick}>UPDATE VIEW</button>
