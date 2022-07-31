@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import * as SDV from "@shapediver/viewer";
+import {InteractionEngine, SelectManager, InteractionData} from "@shapediver/viewer.features.interaction";
 import RangeSlider from "../public/components/rangeSlider";
 
 const ShapediverPage = () => {
@@ -23,9 +24,10 @@ const ShapediverPage = () => {
         id: "mySession4"
       });
 
+      session.node.data.push(new InteractionData({ select: true }));
+      console.log(session.node.data)
       return session;
     };
-    console.log('running session');
     getSession();
   }, []);
 
@@ -40,16 +42,21 @@ const ShapediverPage = () => {
         id: "myViewport"
       });
 
-      return viewport;
+    const interaction = new InteractionEngine(viewport)
+    const selectManager = new SelectManager();
+    selectManager.effectMaterial = new SDV.MaterialStandardData({ color: "#ffff00" });
+    interaction.addInteractionManager(selectManager);
+
+    return viewport;
     };
     console.log(getViewer());
   }, [containerRef]);
 
   async function handleClick(){
-    SDV.sessions['mySession4'].getParameterByName('Shelf Width')[0].value = "1200";    
+    SDV.sessions['mySession4'].getParameterByName('Shelf Width')[0].value = "1200";   
     await SDV.sessions['mySession4'].customize();
   }
-
+  
   async function handleChange(e){
     SDV.sessions['mySession4'].getParameterByName('Shelf Width')[0].value = e.target.value;    
     await SDV.sessions['mySession4'].customize();
