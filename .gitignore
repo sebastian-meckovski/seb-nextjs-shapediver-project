@@ -30,3 +30,6 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+dir_to_ignore/
+moccasin-eland

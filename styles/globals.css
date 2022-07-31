@@ -3,7 +3,14 @@ body {
   padding: 0;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+.mainPage{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  
 }
 
 a {
@@ -23,6 +30,12 @@ a {
     color: white;
     background: slategrey;
   }
+}
+
+.sliderContainer{
+  grid-column: 1;
+  grid-row: 2;
+
 }
 
 .slider{
@@ -54,4 +67,23 @@ a {
   height: 25px;
   background: #04AA6D;
   cursor: pointer;
+}
+
+.sidebar{
+  display: inline;
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.sideBarItem{
+  height: 50px;
+  width: 300px;
+  margin: 5px;
+  border: 2px solid black;
+}
+
+.testButton{
+  width: 100px;
+  height: 45px;
+  grid-column: 1;
 }

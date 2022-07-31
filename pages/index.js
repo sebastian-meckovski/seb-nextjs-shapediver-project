@@ -1,7 +1,37 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import * as SDV from "@shapediver/viewer";
 import {InteractionEngine, SelectManager, InteractionData} from "@shapediver/viewer.features.interaction";
 import RangeSlider from "../public/components/rangeSlider";
+import { createClient } from "next-sanity";
+import SideBar from "../public/components/sideBar";
+
+const client = createClient({
+  projectId: "mefzw5qp",
+  dataset: "seb-test-dataset",
+  apiVersion: "2022-03-25",
+  useCdn: false
+});
+
+export async function getStaticProps() {
+  const listOfThings = [
+    {
+      _createdAt: "2022-03-08T09:28:00Z",
+      _id: "1f69c53d-418a-452f-849a-e92466bb9c75",
+      _rev: "xnBg0xhUDzo561jnWODd5e",
+      _type: "animal",
+      _updatedAt: "2022-03-08T09:28:00Z",
+      name: "Capybara"
+    }
+  ];
+
+  return {
+    props: {
+      listOfThings
+    }
+  };
+}
+
+const listOfThings = await client.fetch(`*[_type == "Description"]`);
 
 const ShapediverPage = () => {
   const containerRef = useRef(null);
@@ -55,6 +85,7 @@ const ShapediverPage = () => {
   async function handleClick(){
     SDV.sessions['mySession4'].getParameterByName('Shelf Width')[0].value = "1200";   
     await SDV.sessions['mySession4'].customize();
+
   }
   
   async function handleChange(e){
@@ -63,11 +94,11 @@ const ShapediverPage = () => {
   }
 
   return (
-    <div style={{ height: 600, width: 600 }}>
+    <div className="mainPage" style={{ height: 500, width: 800 }}>
       <RangeSlider handleChange={handleChange}></RangeSlider>
       <ShapeDiverV3 ref={containerRef} />
-      <h1>Hello World</h1>
-      <button onClick={handleClick}>UPDATE VIEW</button>
+      <button onClick={handleClick} className='testButton'>UPDATE VIEW</button>
+      <SideBar listOfThings={listOfThings}></SideBar>
     </div>
   );
 };

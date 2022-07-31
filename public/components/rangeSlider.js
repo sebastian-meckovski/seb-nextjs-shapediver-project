@@ -5,7 +5,7 @@ export default function RangeSlider(props){
 
     
     return (
-        <div>
+        <div className="sliderContainer">
             <input type="range" min="1200" max="2000" defaultValue={'1200'} step="100" className="slider"
                    onChange={props.handleChange}>
                 
