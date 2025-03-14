@@ -2,11 +2,14 @@ import { createSession, IParameterApi } from "@shapediver/viewer.session";
 import { createViewport } from "@shapediver/viewer.viewport";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { getInputTypeFromParamType } from "./shared/helpers/getInputTypeFromParamType";
+import { debounce } from "./shared/helpers/debounce";
 
 export const ViewerFunctionalComponent: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const sessionRef = useRef<any>(null);
-  const [displayParameters, setDisplayParamters] = useState<IParameterApi<unknown>[]>([]);
+  const [displayParameters, setDisplayParamters] = useState<
+    IParameterApi<unknown>[]
+  >([]);
 
   // Initialization: create the viewport and session, then retrieve the parameter.
   useEffect(() => {
@@ -34,7 +37,7 @@ export const ViewerFunctionalComponent: React.FC = () => {
           const param = session.parameters[key];
           displayParameters.push(param);
         });
-        console.log(displayParameters)
+        console.log(displayParameters);
         setDisplayParamters(displayParameters);
       } catch (error) {
         console.error("Error initializing the session or viewport:", error);
@@ -51,18 +54,18 @@ export const ViewerFunctionalComponent: React.FC = () => {
 
   // Memoize the parameter update to avoid unnecessary re-renders
   const handleParameterChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>, paramId: string) => {
+    debounce((e, id) => {
+      console.log("helo", e, id);
       const session = sessionRef.current;
       if (!session) return;
-      const parameter = session.getParameterById(paramId);
+      const parameter = session.getParameterById(id);
       if (!parameter) return;
       parameter.value =
         parameter.type === "Bool" ? e.target.checked : e.target.value;
-      setDisplayParamters((prev) => {(prev.find((p) => p.id === paramId) as any).value = parameter.value; return [...prev]});
       session.customize().catch((error: any) => {
         console.error("Error customizing session:", error);
       });
-    },
+    }, 1000),
     []
   );
 
@@ -82,8 +85,20 @@ export const ViewerFunctionalComponent: React.FC = () => {
             <input
               type={type}
               id={param.id}
-              value={displayParameters.find((p) => p.id === param.id)?.value as string}
-              onChange={(e) => { 
+              value={
+                displayParameters.find((p) => p.id === param.id)
+                  ?.value as string
+              }
+              checked={
+                displayParameters.find((p) => p.id === param.id)
+                  ?.value as boolean
+              }
+              onChange={(e) => {
+                setDisplayParamters((prev) => {
+                  (prev.find((p) => p.id === param.id) as any).value =
+                    param.type === "Bool" ? e.target.checked : e.target.value;
+                  return [...prev];
+                });
                 handleParameterChange(e, param.id);
               }}
             />
@@ -93,3 +108,9 @@ export const ViewerFunctionalComponent: React.FC = () => {
     </div>
   );
 };
+
+
+// TODO useEffect optimization for re-rendering
+// Error handling
+// Enforce min and max values and handle errors in case of invalid values
+// re-using session ???
