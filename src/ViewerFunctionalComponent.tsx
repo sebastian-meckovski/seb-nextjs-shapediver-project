@@ -1,12 +1,9 @@
-import {
-  createSession,
-  IParameterApi,
-  sessions,
-} from "@shapediver/viewer.session";
+import { createSession, IParameterApi } from "@shapediver/viewer.session";
 import { createViewport } from "@shapediver/viewer.viewport";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { getInputTypeFromParamType } from "./shared/helpers/getInputTypeFromParamType";
 import { debounce } from "./shared/helpers/debounce";
+import Slider from "@mui/material/Slider";
 
 export const ViewerFunctionalComponent: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -57,9 +54,6 @@ export const ViewerFunctionalComponent: React.FC = () => {
   // Memoize the parameter update to avoid unnecessary re-renders
   const handleParameterChange = useCallback(
     debounce((e, id) => {
-      const mySessions = sessions;
-      console.log("mySessions", mySessions);
-      console.log("helo", e, id);
       const session = sessionRef.current;
       if (!session) return;
       const parameter = session.getParameterById(id);
@@ -85,37 +79,66 @@ export const ViewerFunctionalComponent: React.FC = () => {
       <div>
         {displayParameters.map((param) => {
           const type = getInputTypeFromParamType(param.type);
-          return (
-            <div key={param.id}>
-              <label htmlFor={param.id}>{param.name}</label>
-              <input
-                type={type}
-                id={param.id}
-                value={
-                  displayParameters.find((p) => p.id === param.id)
-                    ?.value as string
-                }
-                checked={
-                  displayParameters.find((p) => p.id === param.id)
-                    ?.value as boolean
-                }
-                onChange={(e) => {
-                  setDisplayParamters((prev) => {
-                    (prev.find((p) => p.id === param.id) as any).value =
-                      param.type === "Bool" ? e.target.checked : e.target.value;
-                    return [...prev];
-                  });
-                  handleParameterChange(e, param.id);
-                }}
-              />
-            </div>
-          );
+          switch (param.type) {
+            case "Int":
+              return (
+                <div key={param.id}>
+                  <label htmlFor={param.id}>{param.name}</label>
+                  <Slider
+                    aria-label="Small"
+                    valueLabelDisplay="auto"
+                    step={1}
+                    min={param.min}
+                    max={param.max}
+                    value={
+                      displayParameters.find((p) => p.id === param.id)
+                        ?.value as number
+                    }
+                    onChange={(e: Event, value: number | number[]) => {
+                      setDisplayParamters((prev) => {
+                        (prev.find((p) => p.id === param.id) as any).value =
+                          value;
+                        return [...prev];
+                      });
+                      handleParameterChange(e, param.id);
+                    }}
+                  />
+                </div>
+              );
+            default:
+              return (
+                <div key={param.id}>
+                  <label htmlFor={param.id}>{param.name}</label>
+                  <input
+                    type={type}
+                    id={param.id}
+                    value={
+                      displayParameters.find((p) => p.id === param.id)
+                        ?.value as string
+                    }
+                    checked={
+                      displayParameters.find((p) => p.id === param.id)
+                        ?.value as boolean
+                    }
+                    onChange={(e) => {
+                      setDisplayParamters((prev) => {
+                        (prev.find((p) => p.id === param.id) as any).value =
+                          param.type === "Bool"
+                            ? e.target.checked
+                            : e.target.value;
+                        return [...prev];
+                      });
+                      handleParameterChange(e, param.id);
+                    }}
+                  />
+                </div>
+              );
+          }
         })}
       </div>
     </div>
   );
 };
-
 
 // TODO useEffect optimization for re-rendering
 // Error handling
