@@ -4,7 +4,7 @@ import './index.css'
 import My3DModelViewer from './App'
 
 createRoot(document.getElementById('root')!).render(
-  // <StrictMode>
+  <StrictMode>
     <My3DModelViewer />
-  // </StrictMode>,
+  </StrictMode>,
 )
