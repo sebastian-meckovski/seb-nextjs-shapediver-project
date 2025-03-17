@@ -1,10 +1,10 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import My3DModelViewer from './App'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import { ViewerFunctionalComponent } from "./ViewerFunctionalComponent";
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <My3DModelViewer />
-  </StrictMode>,
-)
+    <ViewerFunctionalComponent />
+  </StrictMode>
+);

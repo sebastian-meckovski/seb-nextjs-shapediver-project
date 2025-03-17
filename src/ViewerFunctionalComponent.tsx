@@ -1,9 +1,16 @@
 import { createSession, IParameterApi } from "@shapediver/viewer.session";
 import { createViewport } from "@shapediver/viewer.viewport";
-import React, { useEffect, useRef, useState, useCallback } from "react";
-import { getInputTypeFromParamType } from "./shared/helpers/getInputTypeFromParamType";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  ChangeEvent,
+} from "react";
 import { debounce } from "./shared/helpers/debounce";
 import Slider from "@mui/material/Slider";
+import { Checkbox, TextField } from "@mui/material";
+import "./App.css";
 
 export const ViewerFunctionalComponent: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -27,7 +34,7 @@ export const ViewerFunctionalComponent: React.FC = () => {
 
         const session = await createSession({
           ticket:
-            "ba390f092896eaf776e6259f607aeb8946ac1359671be86608452f0718ef7311da4b9ba9d6eff6c841415ca7927ef211a018ba90591a32b75a2d578bd9e613dc1d00e9387ba90e69c809ac6f7f7f923cea54ea061dba656144fd788b65173466f3a8a20fd9429a-2511deeda86828ddaa2386dca43e3bea",
+            "712cfbb340b4cb4a52625e94efaeb53f9e7e8a65f5c2288a120927862a96538b7beafa6852f7b8bfe6a35046639356155bccb80a2b3d7ad855b7c83cf16ff4a8f72f4c98c762cca35bd3b221748d1bca78a32bdc5748543704cf4977d3ec7696226e59129e2b3d-2ca1391b2466d8df375cb400e9f616cc",
           modelViewUrl: "https://sdr8euc1.eu-central-1.shapediver.com",
         });
         sessionRef.current = session;
@@ -67,27 +74,27 @@ export const ViewerFunctionalComponent: React.FC = () => {
     []
   );
 
-  const divStyle = {
-    width: "800px",
-    height: "800px",
-    display: "flex",
-  };
-
   return (
-    <div style={divStyle}>
-      <canvas ref={canvasRef} />
-      <div>
+    <div className="main-container">
+      <div className="canvas-container">
+        <canvas id="viewer" ref={canvasRef} />
+      </div>
+      <div className="controls-container">
         {displayParameters.map((param) => {
-          const type = getInputTypeFromParamType(param.type);
+          if (param.hidden) return null;
           switch (param.type) {
+            case "Float":
             case "Int":
               return (
-                <div key={param.id}>
+                <div key={param.id} className="parameter-container">
                   <label htmlFor={param.id}>{param.name}</label>
                   <Slider
-                    aria-label="Small"
+                    aria-label={param.name}
                     valueLabelDisplay="auto"
-                    step={1}
+                    step={Math.pow(
+                      10,
+                      param.decimalplaces ? -param.decimalplaces : 0
+                    )}
                     min={param.min}
                     max={param.max}
                     value={
@@ -105,27 +112,23 @@ export const ViewerFunctionalComponent: React.FC = () => {
                   />
                 </div>
               );
-            default:
+            case "Bool":
               return (
-                <div key={param.id}>
+                <div key={param.id} className="parameter-container">
                   <label htmlFor={param.id}>{param.name}</label>
-                  <input
-                    type={type}
-                    id={param.id}
-                    value={
-                      displayParameters.find((p) => p.id === param.id)
-                        ?.value as string
-                    }
+                  <Checkbox
+                    aria-label={param.name}
                     checked={
                       displayParameters.find((p) => p.id === param.id)
                         ?.value as boolean
                     }
-                    onChange={(e) => {
+                    onChange={(
+                      e: ChangeEvent<HTMLInputElement>,
+                      checked: boolean
+                    ) => {
                       setDisplayParamters((prev) => {
                         (prev.find((p) => p.id === param.id) as any).value =
-                          param.type === "Bool"
-                            ? e.target.checked
-                            : e.target.value;
+                          checked;
                         return [...prev];
                       });
                       handleParameterChange(e, param.id);
@@ -133,6 +136,30 @@ export const ViewerFunctionalComponent: React.FC = () => {
                   />
                 </div>
               );
+            case "String":
+            case "Color":
+            case "StringList":
+              return (
+                <div key={param.id} className="parameter-container">
+                  <label htmlFor={param.id}>{param.name}</label>
+                  <TextField
+                    value={
+                      displayParameters.find((p) => p.id === param.id)
+                        ?.value as string
+                    }
+                    onChange={(e) => {
+                      setDisplayParamters((prev) => {
+                        (prev.find((p) => p.id === param.id) as any).value =
+                          e.target.value;
+                        return [...prev];
+                      });
+                      handleParameterChange(e, param.id);
+                    }}
+                  />
+                </div>
+              );
+            default:
+              return <p>Parameter type not recognised</p>;
           }
         })}
       </div>
@@ -141,6 +168,6 @@ export const ViewerFunctionalComponent: React.FC = () => {
 };
 
 // TODO useEffect optimization for re-rendering
+// color picker
 // Error handling
-// Enforce min and max values and handle errors in case of invalid values
 // re-using session ???
