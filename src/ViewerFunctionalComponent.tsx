@@ -26,7 +26,7 @@ export const ViewerFunctionalComponent: React.FC = () => {
 
         const session = await createSession({
           ticket:
-            "eebc2058d76b8ccabb06cd496e53a1cbf8f3d4834dc7e3efd464cdde53fcd1be461cafe2385423e142792c4580ce9695200afdaafa4b38f3ab30b9c9fc14ad8ff9563b651837f207544c4da064fe2634d00145140f7509d54f7d4ee4580d7e7149c7d87eb4bbdd-11cce1652d87ae263ba3456d75524301",
+            "ba390f092896eaf776e6259f607aeb8946ac1359671be86608452f0718ef7311da4b9ba9d6eff6c841415ca7927ef211a018ba90591a32b75a2d578bd9e613dc1d00e9387ba90e69c809ac6f7f7f923cea54ea061dba656144fd788b65173466f3a8a20fd9429a-2511deeda86828ddaa2386dca43e3bea",
           modelViewUrl: "https://sdr8euc1.eu-central-1.shapediver.com",
           // modelStateId: 'q1FfKNnKtHlZrmGf'
         });
@@ -140,10 +140,28 @@ export const ViewerFunctionalComponent: React.FC = () => {
           onClick={async () => {
             const session = sessionRef.current;
             let modelStateId = await session?.createModelState();
-            console.log('modelStateId', modelStateId)
+            console.log("modelStateId", modelStateId);
+            console.log("session?.exports", session?.exports);
           }}
         >
           Get Model State
+        </Button>
+        <Button
+          onClick={async () => {
+            const session = sessionRef.current;
+            const exportObject = session?.getExportByName("Download 3MF")[0];
+            const response = await exportObject?.request();
+
+            if (response?.content && response.filename) {
+              const downloadUrl: string = (response.content?.[0] as { href: string }).href;
+              const link = document.createElement("a");
+              link.href = downloadUrl;
+              link.download = response.filename;
+              link.click();
+            }
+          }}
+        >
+          Download Export
         </Button>
       </div>
     </div>
