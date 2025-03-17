@@ -1,14 +1,14 @@
-import { createSession, IParameterApi } from "@shapediver/viewer.session";
+import { createSession, IParameterApi, ISessionApi } from "@shapediver/viewer.session";
 import { createViewport } from "@shapediver/viewer.viewport";
 import React, { useEffect, useRef, useState, useCallback, ChangeEvent } from "react";
 import { debounce } from "./shared/helpers/debounce";
 import Slider from "@mui/material/Slider";
-import { Checkbox, TextField } from "@mui/material";
+import { Button, Checkbox, TextField } from "@mui/material";
 import "./App.css";
 
 export const ViewerFunctionalComponent: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const sessionRef = useRef<any>(null);
+  const sessionRef = useRef<ISessionApi>(null);
   const hasInitialized = useRef<boolean>(false);
   const [displayParameters, setDisplayParamters] = useState<IParameterApi<unknown>[]>([]);
 
@@ -26,8 +26,9 @@ export const ViewerFunctionalComponent: React.FC = () => {
 
         const session = await createSession({
           ticket:
-            "712cfbb340b4cb4a52625e94efaeb53f9e7e8a65f5c2288a120927862a96538b7beafa6852f7b8bfe6a35046639356155bccb80a2b3d7ad855b7c83cf16ff4a8f72f4c98c762cca35bd3b221748d1bca78a32bdc5748543704cf4977d3ec7696226e59129e2b3d-2ca1391b2466d8df375cb400e9f616cc",
+            "eebc2058d76b8ccabb06cd496e53a1cbf8f3d4834dc7e3efd464cdde53fcd1be461cafe2385423e142792c4580ce9695200afdaafa4b38f3ab30b9c9fc14ad8ff9563b651837f207544c4da064fe2634d00145140f7509d54f7d4ee4580d7e7149c7d87eb4bbdd-11cce1652d87ae263ba3456d75524301",
           modelViewUrl: "https://sdr8euc1.eu-central-1.shapediver.com",
+          // modelStateId: 'q1FfKNnKtHlZrmGf'
         });
         sessionRef.current = session;
 
@@ -135,6 +136,15 @@ export const ViewerFunctionalComponent: React.FC = () => {
               return <p>Parameter type not recognised</p>;
           }
         })}
+        <Button
+          onClick={async () => {
+            const session = sessionRef.current;
+            let modelStateId = await session?.createModelState();
+            console.log('modelStateId', modelStateId)
+          }}
+        >
+          Get Model State
+        </Button>
       </div>
     </div>
   );
