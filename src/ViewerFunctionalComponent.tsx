@@ -1,12 +1,6 @@
 import { createSession, IParameterApi } from "@shapediver/viewer.session";
 import { createViewport } from "@shapediver/viewer.viewport";
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-  ChangeEvent,
-} from "react";
+import React, { useEffect, useRef, useState, useCallback, ChangeEvent } from "react";
 import { debounce } from "./shared/helpers/debounce";
 import Slider from "@mui/material/Slider";
 import { Checkbox, TextField } from "@mui/material";
@@ -16,9 +10,7 @@ export const ViewerFunctionalComponent: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const sessionRef = useRef<any>(null);
   const hasInitialized = useRef<boolean>(false);
-  const [displayParameters, setDisplayParamters] = useState<
-    IParameterApi<unknown>[]
-  >([]);
+  const [displayParameters, setDisplayParamters] = useState<IParameterApi<unknown>[]>([]);
 
   // Initialization: create the viewport and session, then retrieve the parameter.
   useEffect(() => {
@@ -65,13 +57,12 @@ export const ViewerFunctionalComponent: React.FC = () => {
       if (!session) return;
       const parameter = session.getParameterById(id);
       if (!parameter) return;
-      parameter.value =
-        parameter.type === "Bool" ? e.target.checked : e.target.value;
+      parameter.value = parameter.type === "Bool" ? e.target.checked : e.target.value;
       session.customize().catch((error: any) => {
         console.error("Error customizing session:", error);
       });
     }, 1000),
-    []
+    [],
   );
 
   return (
@@ -91,20 +82,13 @@ export const ViewerFunctionalComponent: React.FC = () => {
                   <Slider
                     aria-label={param.name}
                     valueLabelDisplay="auto"
-                    step={Math.pow(
-                      10,
-                      param.decimalplaces ? -param.decimalplaces : 0
-                    )}
+                    step={Math.pow(10, param.decimalplaces ? -param.decimalplaces : 0)}
                     min={param.min}
                     max={param.max}
-                    value={
-                      displayParameters.find((p) => p.id === param.id)
-                        ?.value as number
-                    }
+                    value={displayParameters.find((p) => p.id === param.id)?.value as number}
                     onChange={(e: Event, value: number | number[]) => {
                       setDisplayParamters((prev) => {
-                        (prev.find((p) => p.id === param.id) as any).value =
-                          value;
+                        (prev.find((p) => p.id === param.id) as any).value = value;
                         return [...prev];
                       });
                       handleParameterChange(e, param.id);
@@ -118,17 +102,10 @@ export const ViewerFunctionalComponent: React.FC = () => {
                   <label htmlFor={param.id}>{param.name}</label>
                   <Checkbox
                     aria-label={param.name}
-                    checked={
-                      displayParameters.find((p) => p.id === param.id)
-                        ?.value as boolean
-                    }
-                    onChange={(
-                      e: ChangeEvent<HTMLInputElement>,
-                      checked: boolean
-                    ) => {
+                    checked={displayParameters.find((p) => p.id === param.id)?.value as boolean}
+                    onChange={(e: ChangeEvent<HTMLInputElement>, checked: boolean) => {
                       setDisplayParamters((prev) => {
-                        (prev.find((p) => p.id === param.id) as any).value =
-                          checked;
+                        (prev.find((p) => p.id === param.id) as any).value = checked;
                         return [...prev];
                       });
                       handleParameterChange(e, param.id);
@@ -143,14 +120,10 @@ export const ViewerFunctionalComponent: React.FC = () => {
                 <div key={param.id} className="parameter-container">
                   <label htmlFor={param.id}>{param.name}</label>
                   <TextField
-                    value={
-                      displayParameters.find((p) => p.id === param.id)
-                        ?.value as string
-                    }
+                    value={displayParameters.find((p) => p.id === param.id)?.value as string}
                     onChange={(e) => {
                       setDisplayParamters((prev) => {
-                        (prev.find((p) => p.id === param.id) as any).value =
-                          e.target.value;
+                        (prev.find((p) => p.id === param.id) as any).value = e.target.value;
                         return [...prev];
                       });
                       handleParameterChange(e, param.id);

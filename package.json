@@ -84,5 +84,8 @@
     "vite-plugin-svgr": "^4.3.0",
     "vite-tsconfig-paths": "^5.1.4",
     "web-vitals": "^4.2.4"
+  },
+  "prettier": {
+    "printWidth": 120
   }
 }
